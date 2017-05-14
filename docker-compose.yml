@@ -1,0 +1,16 @@
+version: '2'
+
+services:
+  openair:
+    build: .
+    volumes:
+      - ".:/app"
+    links:
+      - "chrome:webdriver"
+    depends_on:
+      - chrome
+
+  chrome:
+    image: selenium/standalone-chrome
+    volumes:
+      - "/dev/shm:/dev/shm"

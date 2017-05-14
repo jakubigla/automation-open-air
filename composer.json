@@ -1,0 +1,23 @@
+{
+    "name": "jakubigla/auutomation-open-air",
+    "description": "Automating your Open Air requests",
+    "type": "project",
+    "require": {
+        "behat/mink": "^1.7",
+        "behat/mink-selenium2-driver": "^1.3",
+        "zendframework/zend-servicemanager": "^3.3",
+        "zendframework/zend-filter": "^2.7"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^2.8.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "OpenAir\\": "src/"
+        }
+    },
+    "scripts": {
+        "cs-check": "phpcs",
+        "cs-fix": "phpcbf"
+    }
+}

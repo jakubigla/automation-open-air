@@ -1,0 +1,18 @@
+authentication:
+  company: "Valtech"
+  user: "jakub.igla"
+  password: "oyBui$3bR9uZvT"
+
+global:
+  accomodation:
+    required: yes
+  travel:
+    required: yes
+    dest_rail_station_code: "BLP"
+    src_rail_station_code: "PAD"
+    note: |
+      {{ in | dateFormat l }} ({{ in | dateFormat d-m-y }})
+      From {{ travel.src_rail_station_code | getNameByCode }} [{{ travel.src_rail_station_code }}] at {{ travel.in_hour }} to {{ travel.dest_rail_station_code | getNameByCode }} [{{ travel.dest_rail_station_code }}]
+
+      {{ out | dateFormat l }} ({{ out | dateFormat d-m-y }})
+      From {{ travel.dest_rail_station_code | getNameByCode }} [{{ travel.src_rail_station_code }}] at {{ travel.out_hour }} to {{ travel.src_rail_station_code | getNameByCode }} [{{ travel.src_rail_station_code }}]

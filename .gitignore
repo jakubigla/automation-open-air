@@ -1,0 +1,10 @@
+.idea
+composer.phar
+composer.lock
+screenshots
+config/defaults.yml
+receipts/*
+!receipts/*.sample.yml
+
+phpunit.xml
+vendor/

@@ -1,0 +1,48 @@
+global:
+  onsite:
+    client: "ONS UK : ONS - SPC VAT Alpha"
+    task: "12: Delivery [Onsite]"
+    accomodation:
+      name: "Waterloo Hotel"
+    travel:
+      dest_rail_station_code: "BLP"
+
+modules:
+  - onsite:
+      in: "next monday"
+      out: "next friday"
+      travel:
+        note: "7th floor!"
+        dest_rail_station_code: "NWP"
+        in_hour: "7:45"
+        out_hour: "15:10"
+      accommodation:
+        required: no
+  - onsite:
+      in: "21-05-2017"
+      out: "next friday"
+      travel:
+        in_time: "7:45"
+        out_time: "15:10"
+      accommodation:
+        required: yes
+  - onsite:
+      in: "21-05-2017"
+      out: "next friday"
+      travel:
+        required: no
+      accommodation:
+        required: yes
+  - timesheet:
+      client: "ONS UK : ONS - SPC VAT Alpha"
+      task: "12: Delivery [Onsite]"
+      starting_date: #if empty then next available
+      mon: 8
+      tue: 8
+      wed: 8
+      thu: 8
+      fri: 8
+      sat:
+      sun:
+  - expense:
+      type: taxi
