@@ -3,9 +3,8 @@
 namespace OpenAir;
 
 use Behat\Mink\Mink;
-use Behat\Mink\Session;
-use Behat\Mink\Driver\Selenium2Driver;
 use OpenAir\Module\ModuleInterface;
+use OpenAir\Parser\ChainParser;
 use Psr\Container\ContainerInterface;
 use Zend\Filter\Word\CamelCaseToUnderscore;
 use Zend\Filter\Word\UnderscoreToCamelCase;
@@ -17,6 +16,9 @@ class OpenAir
 
     /** @var string */
     private $receiptName;
+
+    /** @var array */
+    private $config;
 
     /** @var ModuleInterface[] */
     private $modules = [];
@@ -32,12 +34,10 @@ class OpenAir
         $this->container   = $container;
         $this->receiptName = $receiptName;
 
-        $modules = (new ConfigProvider($receiptName))->getModules();
+        $this->config = (new ConfigProvider($receiptName))->getModules(new ChainParser());
 
-        var_dump($modules);exit;
-
-        foreach ($modules as $module) {
-            $moduleName = key($module);
+        foreach ($this->config['modules'] as $module) {
+            $moduleName = \key($module);
             $this->addModule($moduleName, $module[$moduleName]);
         }
     }
@@ -64,5 +64,13 @@ class OpenAir
         }
 
         $this->modules[] = $module;
+    }
+
+    /**
+     * @return array
+     */
+    public function getConfig(): array
+    {
+        return $this->config;
     }
 }

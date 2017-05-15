@@ -22,7 +22,7 @@ class RailStationName implements FilterInterface
         }
     }
 
-    public function filter($value): string
+    public function filter($value)
     {
         if (! array_key_exists($value, $this->stations)) {
             throw new \RuntimeException('Code not found the station by code');

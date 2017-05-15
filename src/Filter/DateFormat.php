@@ -17,7 +17,7 @@ class DateFormat implements FilterInterface
         $this->format = $format;
     }
 
-    public function filter($value): string
+    public function filter($value)
     {
         return \date($this->format, \strtotime($value));
     }

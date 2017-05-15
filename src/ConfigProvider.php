@@ -2,7 +2,7 @@
 
 namespace OpenAir;
 
-use OpenAir\Filter\FilterInterface;
+use OpenAir\Parser\ParserInterface;
 use Zend\Stdlib\ArrayUtils;
 
 /**
@@ -13,8 +13,6 @@ use Zend\Stdlib\ArrayUtils;
  */
 class ConfigProvider
 {
-    const VAR_REGEX = '/\{\{\s([a-zA-Z0-9_\.]+)(\s\|\s([a-zA-Z0-9_]+)+(\s([a-zA-Z0-9_\-\s]+)?)?)?\s\}\}/i';
-
     /** @var array */
     private $config = [];
 
@@ -25,72 +23,53 @@ class ConfigProvider
      */
     public function __construct(string $receiptName)
     {
-        $defaultsFile = 'config/defaults.yml';
-        if (! \file_exists($defaultsFile)) {
-            throw new \RuntimeException('Default config does\'t exist');
-        }
-        $defaults = \yaml_parse(\file_get_contents($defaultsFile));
-
         $receiptFile = \sprintf('receipts/%s.yml', $receiptName);
         if (! \file_exists($receiptFile)) {
             throw new \RuntimeException('Receipt does\'t exist');
         }
+
         $receiptConfig = \yaml_parse(\file_get_contents($receiptFile));
 
-        $this->config = ArrayUtils::merge($defaults, $receiptConfig);
+        $this->config = ArrayUtils::merge($this->getDefaults(), $receiptConfig);
 
         $this->applyGlobals();
     }
 
     /**
+     * @param ParserInterface $parser
+     *
      * @return array
      */
-    public function getModules(): array
+    public function getModules(ParserInterface $parser): array
     {
         $modules = $this->config['modules'];
 
         foreach ($modules as &$module) {
-            $config = $module[\key($module)];
-            \array_walk_recursive($config, function (&$item) use ($config) {
-                $item = $this->getParsedValue($item, $config);
+            $cfg = $module[\key($module)];
+            \array_walk_recursive($cfg, function (&$item) use ($parser, $cfg) {
+                if (is_string($item)) {
+                    $item = $parser->gerParsed($item, $cfg);
+                }
             });
 
-            $module[\key($module)] = $config;
+            $modules[\key($module)] = $cfg;
         }
 
         return $modules;
     }
 
     /**
-     * @param string $value
-     * @param mixed  $config
-     *
-     * @return string
+     * @return array
      */
-    private function getParsedValue(string $value, $config): string
+    private function getDefaults(): array
     {
-        \preg_match_all(self::VAR_REGEX, $value, $matches);
+        $defaultsFile = 'config/defaults.yml';
 
-        foreach ($matches[0] as $key => $match) {
-            $val = $this->getFromConfig($matches[1][$key], $config);
-
-            $filterName = $matches[3][$key];
-            if ($filterName) {
-                $args   = \explode(' ', $matches[5][$key]);
-                $class  = \sprintf("%s\\%s", 'OpenAir\Filter', \ucfirst($filterName));
-                $filter = new $class($args[0]);
-
-                if (! $filter instanceof FilterInterface) {
-                    throw new \RuntimeException('Invalid filter provided');
-                }
-
-                $val = $filter->filter($val);
-            }
-
-            $value = \str_replace($match, $val, $value);
+        if (! \file_exists($defaultsFile)) {
+            throw new \RuntimeException('Default config does not exist');
         }
 
-        return (string)$value;
+        return \yaml_parse(\file_get_contents($defaultsFile));
     }
 
     /**
@@ -112,36 +91,5 @@ class ConfigProvider
 
             $moduleContainer[$moduleName] = $config;
         }
-    }
-
-    /**
-     * @param string $key
-     * @param mixed  $config
-     *
-     * @return string
-     */
-    private function getFromConfig(string $key, $config): string
-    {
-        $keys = \explode('.', $key);
-        $currentKey = $keys[0];
-
-        if (! \array_key_exists($currentKey, $config)) {
-            throw new \RuntimeException('Key does not exist');
-        }
-
-        $value = $config[$currentKey];
-
-        \array_shift($keys);
-        $key = \implode('.', $keys);
-
-        if (\strlen($key) > 0) {
-            if (! \is_array($value)) {
-                throw new \RuntimeException('Value should be an array');
-            }
-
-            return $this->getFromConfig($key, $value);
-        }
-
-        return $value;
     }
 }
