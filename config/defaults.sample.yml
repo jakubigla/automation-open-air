@@ -1,18 +1,50 @@
-authentication:
-  company: "Valtech"
-  user: "jakub.igla"
-  password: "oyBui$3bR9uZvT"
+globals: #applied to all modules
+  client: "ONS UK : ONS - SPC VAT Alpha"
+  task: "12: Delivery [Onsite]"
 
-global:
-  accomodation:
-    required: yes
-  travel:
-    required: yes
-    dest_rail_station_code: "BLP"
-    src_rail_station_code: "PAD"
-    note: |
-      {{ in | dateFormat l }} ({{ in | dateFormat d-m-y }})
-      From {{ travel.src_rail_station_code | getNameByCode }} [{{ travel.src_rail_station_code }}] at {{ travel.in_hour }} to {{ travel.dest_rail_station_code | getNameByCode }} [{{ travel.dest_rail_station_code }}]
+module_globals: #applied per module
+  on_site:
+    accommodation:
+      required: yes
+      note: |
+        Name: {{ accommodation.name }}
+        Check-in: {{ in | dateFormat l }} ({{ in | dateFormat d-m-y }})
+        Check-out: {{ out | dateFormat l }} ({{ out | dateFormat d-m-y }})
+    travel:
+      required: yes
+      dest_rail_station_code: BLP
+      src_rail_station_code: PAD
+      note: |
+        {{ in | dateFormat l }} ({{ in | dateFormat d-m-y }})
+        From {{ travel.src_rail_station_code | railStationName }} [{{ travel.src_rail_station_code }}] at {{ travel.in_hour }} to {{ travel.dest_rail_station_code | railStationName }} [{{ travel.dest_rail_station_code }}]
 
-      {{ out | dateFormat l }} ({{ out | dateFormat d-m-y }})
-      From {{ travel.dest_rail_station_code | getNameByCode }} [{{ travel.src_rail_station_code }}] at {{ travel.out_hour }} to {{ travel.src_rail_station_code | getNameByCode }} [{{ travel.src_rail_station_code }}]
+        {{ out | dateFormat l }} ({{ out | dateFormat d-m-y }})
+        From {{ travel.dest_rail_station_code | railStationName }} [{{ travel.dest_rail_station_code }}] at {{ travel.out_hour }} to {{ travel.src_rail_station_code | railStationName }} [{{ travel.src_rail_station_code }}]
+
+modules:
+  - authentication:
+      company: Valtech
+      user: jakub.igla
+      password:
+
+post_actions:
+  - mail:
+      login: jakub.igla@valtech.co.uk
+      password:
+      to: UK.TravelandAccommodation@valtech.co.uk
+      cc: Shanice.David@valtech.co.uk
+      subject: "Travel request ({% for item in modules | moduleName on_site %}#{{ item.output.expense_id }} {% endfor %})"
+      body: |
+        Hey,
+
+        Below is my Travel Request:
+        {% for item in modules | moduleName on_site %}
+        OpenAir Report ID: {{ item.output.expense_id }}
+        Client: {{ item.client }}
+        Travel:
+        {{ item.travel.note }}
+        Accommodation:
+        {{ item.accommodation.note }}
+        {% endfor %}
+        Kind regards,
+        Jakub Igla

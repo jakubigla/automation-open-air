@@ -2,9 +2,6 @@
 
 return [
     'factories' => [
-        \Behat\Mink\Mink::class => \OpenAir\Container\MinkFactory::class,
-    ],
-    'invokables' => [
-
+        \Behat\Mink\Mink::class => \App\Container\MinkFactory::class,
     ],
 ];

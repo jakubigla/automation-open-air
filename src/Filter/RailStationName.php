@@ -1,7 +1,12 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace OpenAir\Filter;
+namespace App\Filter;
 
+/**
+ * Class RailStationName
+ *
+ * @author Jakub Igla <jakub.igla@valtech.co.uk>
+ */
 class RailStationName implements FilterInterface
 {
     private $stations;
@@ -22,6 +27,9 @@ class RailStationName implements FilterInterface
         }
     }
 
+    /**
+     * @throws \RuntimeException
+     */
     public function filter($value)
     {
         if (! array_key_exists($value, $this->stations)) {

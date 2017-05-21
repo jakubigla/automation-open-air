@@ -1,11 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace OpenAir\Parser;
+namespace App\Parser;
 
 /**
  * Class ChainParser
  *
- * @package OpenAir\Parser
  * @author Jakub Igla <jakub.igla@valtech.co.uk>
  */
 class ChainParser implements ParserInterface
@@ -19,7 +18,8 @@ class ChainParser implements ParserInterface
     public function __construct()
     {
         $this->parsers = [
-            new VariableParser(),
+            new ForeachParser(),
+            new VariableParser()
         ];
     }
 

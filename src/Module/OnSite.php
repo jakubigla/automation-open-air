@@ -1,10 +1,17 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace OpenAir\Module;
+namespace App\Module;
 
-use OpenAir\ConfigParser;
-use OpenAir\MinkSessionFacade;
+use Behat\Mink\Element\NodeElement;
+use App\MinkSessionFacade;
+use App\OpenAir\Receipt;
+use App\OpenAir\Report;
 
+/**
+ * Class OnSite
+ *
+ * @author Jakub Igla <jakub.igla@valtech.co.uk>
+ */
 class OnSite implements ModuleInterface
 {
     /** @var array */
@@ -17,27 +24,49 @@ class OnSite implements ModuleInterface
      */
     public function __construct(array $config)
     {
-        $this->config       = $config;
+        $this->config = $config;
     }
 
     public function run(MinkSessionFacade $session): void
     {
-        $session->getPage()->findLink('Expenses')->click();
-        sleep(3);
-        $session->screenShot('start');
+        $report = new Report('Travel Request', $this->config['name']);
+        $report->create($session);
 
-        $session->getPage()->find('css', '.oa3_toolbox_button')->click();
-        sleep(1);
+        $receipt = Receipt::trainFareFactory(
+            $this->config['client'],
+            $this->config['task'],
+            $this->config['in'],
+            $this->config['travel']['note']
+        );
 
-        $session->getPage()->findLink('New ...')->click();
-        sleep(3);
-        $session->screenShot('new receipt');
+        $this->config['output']['expense_id'] = $report->getExpenseId();
 
+        if ($report->exists()) {
+            $receipt->create($session);
+        }
 
+        $receipt->fillAndSave($session);
 
+        $receipt = Receipt::accommodationFactory(
+            $this->config['client'],
+            $this->config['task'],
+            $this->config['in'],
+            $this->config['accommodation']['note']
+        );
 
+        $receipt->create($session);
+        $receipt->fillAndSave($session);
 
+        $report->submit($session);
 
-        $note = $this->configParser->parse($this->config['travel']['note']);
+        $session->screenShot('end');
+    }
+
+    /**
+     * @return array
+     */
+    public function getConfig(): array
+    {
+        return $this->config;
     }
 }

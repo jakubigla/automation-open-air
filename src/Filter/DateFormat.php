@@ -1,7 +1,12 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace OpenAir\Filter;
+namespace App\Filter;
 
+/**
+ * Class DateFormat
+ *
+ * @author Jakub Igla <jakub.igla@valtech.co.uk>
+ */
 class DateFormat implements FilterInterface
 {
     /** @var string */
@@ -17,6 +22,11 @@ class DateFormat implements FilterInterface
         $this->format = $format;
     }
 
+    /**
+     * @param $value
+     *
+     * @return mixed
+     */
     public function filter($value)
     {
         return \date($this->format, \strtotime($value));

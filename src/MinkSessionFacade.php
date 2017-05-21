@@ -1,6 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace OpenAir;
+namespace App;
 
 use Behat\Mink\Element\DocumentElement;
 use Behat\Mink\Session;
@@ -35,15 +35,9 @@ class MinkSessionFacade
         $this->runId       = date('Y_m_d_H_i_s');
     }
 
-    public function setNamespace(string $namespace)
+    public function setNamespace(string $namespace): void
     {
         $this->namespace = $namespace;
-    }
-
-    public function updateSid()
-    {
-        $url = $this->session->getCurrentUrl();
-        var_dump($url);
     }
 
     public function visit(string $url): void
@@ -52,13 +46,19 @@ class MinkSessionFacade
         sleep(3);
     }
 
-    public function screenShot($label): void
+    public function screenShot(string $label): void
     {
-        $path = \realpath(\getcwd() . '/screenshots') . DIRECTORY_SEPARATOR . $this->receiptName . DIRECTORY_SEPARATOR . $this->runId;
+        $label = str_replace(' ', '_', $label);
+        $path = \realpath(\getcwd() . '/screenshots') .
+            DIRECTORY_SEPARATOR .
+            $this->receiptName .
+            DIRECTORY_SEPARATOR .
+            $this->runId;
+
         @\mkdir($path, 0755, true);
         $screenShot = $this->session->getDriver()->getScreenshot();
         \file_put_contents($path . DIRECTORY_SEPARATOR . $this->namespace . '_' . $label . '.png', $screenShot);
-        echo "Screen shot done: " . $label . PHP_EOL;
+        echo "[" . $this->namespace . "] screen shot done: " . $label . PHP_EOL;
     }
 
     public function getPage(): DocumentElement

@@ -1,14 +1,15 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace OpenAir;
+namespace App;
 
-use OpenAir\Parser\ParserInterface;
+use App\Module\ModuleInterface;
+use App\Parser\ParserInterface;
+use App\PostAction\PostActionInterface;
 use Zend\Stdlib\ArrayUtils;
 
 /**
  * Class ConfigProvider
  *
- * @package OpenAir
  * @author Jakub Igla <jakub.igla@valtech.co.uk>
  */
 class ConfigProvider
@@ -35,32 +36,54 @@ class ConfigProvider
         $this->applyGlobals();
     }
 
-    /**
-     * @param ParserInterface $parser
-     *
-     * @return array
-     */
     public function getModules(ParserInterface $parser): array
     {
         $modules = $this->config['modules'];
 
         foreach ($modules as &$module) {
-            $cfg = $module[\key($module)];
+            $key = \array_keys($module)[0];
+            $cfg = $module[$key];
+            $cfg[ModuleInterface::KEY_MODULE_NAME] = $key;
+
             \array_walk_recursive($cfg, function (&$item) use ($parser, $cfg) {
                 if (is_string($item)) {
                     $item = $parser->gerParsed($item, $cfg);
                 }
             });
 
-            $modules[\key($module)] = $cfg;
+            $module = $cfg;
         }
 
         return $modules;
     }
 
-    /**
-     * @return array
-     */
+    public function getPostActions(ParserInterface $parser, array $modulesConfig): array
+    {
+        $postActions = $this->config['post_actions'];
+
+        foreach ($postActions as &$action) {
+            $key = \array_keys($action)[0];
+            $cfg = $action[$key];
+            $cfg[PostActionInterface::KEY_POST_ACTION_NAME] = $key;
+            $cfg['modules'] = $modulesConfig;
+
+            \array_walk_recursive($cfg, function (&$item) use ($parser, $cfg) {
+                if (is_string($item)) {
+                    $item = $parser->gerParsed($item, $cfg);
+                }
+            });
+
+            $action = $cfg;
+        }
+
+        return $postActions;
+    }
+
+    public function getRaw(): array
+    {
+        return $this->config;
+    }
+
     private function getDefaults(): array
     {
         $defaultsFile = 'config/defaults.yml';
@@ -72,9 +95,6 @@ class ConfigProvider
         return \yaml_parse(\file_get_contents($defaultsFile));
     }
 
-    /**
-     * @return void
-     */
     private function applyGlobals(): void
     {
         foreach ($this->config['modules'] as &$moduleContainer) {

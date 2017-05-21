@@ -1,12 +1,17 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace OpenAir\Parser;
+namespace App\Parser;
 
-use OpenAir\Filter\FilterInterface;
+use App\Filter\FilterInterface;
 
+/**
+ * Class VariableParser
+ *
+ * @author Jakub Igla <jakub.igla@valtech.co.uk>
+ */
 class VariableParser implements ParserInterface
 {
-    const VAR_REGEX = '/\{\{\s([a-zA-Z0-9_\.]+)(\s\|\s([a-zA-Z0-9_]+)+(\s([a-zA-Z0-9_\-\s]+)?)?)?\s\}\}/i';
+    const VAR_REGEX = '/\{\{\s([a-zA-Z0-9_\.]+)(\s\|\s([a-zA-Z0-9_]+)+(\s([^\}]+)?)?)?\s\}\}/i';
 
     public function gerParsed(string $value, array $data): string
     {
@@ -18,7 +23,7 @@ class VariableParser implements ParserInterface
             $filterName = $matches[3][$key];
             if ($filterName) {
                 $args   = \explode(' ', $matches[5][$key]);
-                $class  = \sprintf("%s\\%s", 'OpenAir\Filter', \ucfirst($filterName));
+                $class  = \sprintf("%s\\%s", 'App\Filter', \ucfirst($filterName));
                 $filter = new $class($args[0]);
 
                 if (! $filter instanceof FilterInterface) {

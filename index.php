@@ -2,6 +2,8 @@
 
 include "vendor/autoload.php";
 
+$fp = fsockopen('webdriver', 4444, $errno, $errstr, 10);
+
 $container = require 'config/container.php';
-$openAir   = new \OpenAir\OpenAir($container, getenv('receipt'));
-$openAir->run();
+$app = new \App\App($container, getenv('receipt'));
+$app->run();

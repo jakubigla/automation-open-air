@@ -1,11 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace OpenAir\Parser;
+namespace App\Parser;
 
 /**
  * Interface ParserInterface
  *
- * @package OpenAir\Parser
+ * @author Jakub Igla <jakub.igla@valtech.co.uk>
  */
 interface ParserInterface
 {

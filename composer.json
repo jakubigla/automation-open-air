@@ -6,7 +6,8 @@
         "behat/mink": "^1.7",
         "behat/mink-selenium2-driver": "^1.3",
         "zendframework/zend-servicemanager": "^3.3",
-        "zendframework/zend-filter": "^2.7"
+        "zendframework/zend-filter": "^2.7",
+        "phpmailer/phpmailer": "^5.2"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.1",
@@ -14,12 +15,13 @@
     },
     "autoload": {
         "psr-4": {
-            "OpenAir\\": "src/"
+            "App\\": "src/",
+            "AppTest\\": "tests/"
         }
     },
     "scripts": {
         "cs-check": "phpcs",
         "cs-fix": "phpcbf",
-        "test": "phpunit --colors=always"
+        "test": "docker-compose run --rm openair php /app/vendor/bin/phpunit --colors=always -v --debug"
     }
 }

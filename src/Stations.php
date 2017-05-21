@@ -1,9 +1,17 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace OpenAir;
+namespace App;
 
+/**
+ * Class Stations
+ *
+ * @author Jakub Igla <jakub.igla@valtech.co.uk>
+ */
 class Stations
 {
+    /**
+     * @throws \RuntimeException
+     */
     public static function getNameByCode(string $code): string
     {
         $fp = fopen('data/station_codes.csv', 'r');

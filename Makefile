@@ -4,4 +4,4 @@ build:
 	@docker-compose down && docker-compose build
 
 run:
-	@docker-compose run --rm -e "receipt=ons-newport" openair
+	@docker-compose run --rm -e "receipt=$(receipt)" openair

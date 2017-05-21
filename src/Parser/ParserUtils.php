@@ -1,11 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace OpenAir\Parser;
+namespace App\Parser;
 
 /**
  * Class ParserUtils
  *
- * @package OpenAir\Parser
  * @author Jakub Igla <jakub.igla@valtech.co.uk>
  */
 class ParserUtils
