@@ -89,7 +89,12 @@ class Receipt
         $page->selectFieldOption('tax_location_id', $this->tax_location_id);
         $page->findField('date')->setValue(date('d-m-y', strtotime($this->date)));
         $page->selectFieldOption('custom_96', $this->vendorLocation);
-        $page->selectFieldOption('custom_125', $this->paymentMethod);
+
+        $paymentMethodElement = $page->findField('custom_125');
+        if (! is_null($paymentMethodElement)) {
+            $page->selectFieldOption('custom_125', $this->paymentMethod);
+        }
+
         $page->findField('cost')->setValue($this->cost);
         $page->findField('notes')->setValue($this->notes);
 
@@ -97,6 +102,7 @@ class Receipt
 
         $page->findButton('Save')->focus();
         $page->findButton('Save')->click();
+        sleep(3);
     }
 
     public static function trainFareFactory(string $client, string $task, string $date, string $note): self
@@ -132,6 +138,44 @@ class Receipt
             '(blank)',
             '0.01',
             $note
+        );
+
+        return $receipt;
+    }
+
+    public static function travelBonusFactory(string $client, string $task, string $date, string $note): self
+    {
+        $receipt = new self(
+            'Travel Bonus : £15',
+            'Paid by Expenses',
+            'Reimbursable',
+            $client,
+            $task,
+            'Zero Rate 0%',
+            $date,
+            'UK',
+            '(blank)',
+            '15',
+            $note
+        );
+
+        return $receipt;
+    }
+
+    public static function subsistenceFactory(string $client, string $task, string $date): self
+    {
+        $receipt = new self(
+            'Subsistence - Subsistence Allowance : £35',
+            'Paid by Expenses',
+            'Reimbursable',
+            $client,
+            $task,
+            'Zero Rate 0%',
+            $date,
+            'UK',
+            '(blank)',
+            '35',
+            null
         );
 
         return $receipt;

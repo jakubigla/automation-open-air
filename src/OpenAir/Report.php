@@ -29,25 +29,21 @@ class Report
         $session->getPage()->findLink('Expenses')->click();
         sleep(3);
         $session->getPage()->getHtml();
-        $session->screenShot('Expenses list');
 
         $session->getPage()->find('xpath', "//a[@class='tabLink' and contains(text(), 'Open')]")->click();
         sleep(3);
+        $session->screenShot('Expenses list');
 
-        $session->getPage()
-            ->find('xpath', "//*[contains(text(), '" . $this->name . "')]")
-            ->waitFor(3, function (NodeElement $element) {
-                if ($element->isVisible()) {
-                    $element->click();
-                    $this->exists = true;
-                }
-            });
-
-        if (! $this->exists) {
+        $element = $session->getPage()->find('xpath', "//*[contains(text(), '" . $this->name . "')]");
+        if (! is_null($element)) {
+            $this->exists = true;
+            $element->click();
+        } else {
             $session->getPage()->find('css', '.oa3_toolbox_button')->click();
             sleep(2);
 
             $session->getPage()->findLink('New ...')->click();
+            sleep(2);
 
             $page = $session->getPage();
 
@@ -71,6 +67,8 @@ class Report
         $session->getPage()->findLink('Submit/Approve')->click();
         sleep(3);
         $session->screenShot('Submit');
+
+        //todo: do the actual submit
     }
 
     public function exists(): bool
@@ -78,9 +76,6 @@ class Report
         return $this->exists;
     }
 
-    /**
-     * @return string
-     */
     public function getExpenseId(): string
     {
         return $this->expense_id;

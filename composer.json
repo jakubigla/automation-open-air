@@ -7,7 +7,8 @@
         "behat/mink-selenium2-driver": "^1.3",
         "zendframework/zend-servicemanager": "^3.3",
         "zendframework/zend-filter": "^2.7",
-        "phpmailer/phpmailer": "^5.2"
+        "phpmailer/phpmailer": "^5.2",
+        "beberlei/assert": "^2.7"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.1",

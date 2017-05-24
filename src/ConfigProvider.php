@@ -59,6 +59,10 @@ class ConfigProvider
 
     public function getPostActions(ParserInterface $parser, array $modulesConfig): array
     {
+        if (! array_key_exists('post_actions', $this->config)) {
+            return [];
+        }
+
         $postActions = $this->config['post_actions'];
 
         foreach ($postActions as &$action) {
