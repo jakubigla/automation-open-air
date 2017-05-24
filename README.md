@@ -23,6 +23,8 @@ In `receipts/ons-newport.sample.yml` you can find sample receipt that perform fo
 - Create Travel Request
 - Add Travel Train fare receipt with appropriate note (note definition in global config)
 - Add Accommodation - Hotel receipt with appropriate note (note definition in global config)
+- Create a subsistence report along with travel bonus.
+- Submit timesheets for last week
 - Send e-mail to Back office, using your company e-mail account
 
 ## Run

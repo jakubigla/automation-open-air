@@ -12,7 +12,7 @@ module_globals: #applied per module
         Check-out: {{ out | dateFormat l }} ({{ out | dateFormat d-m-y }})
     travel:
       required: yes
-      dest_rail_station_code: BLP
+      dest_rail_station_code: NWP
       src_rail_station_code: PAD
       note: |
         {{ in | dateFormat l }} ({{ in | dateFormat d-m-y }})
@@ -26,25 +26,3 @@ modules:
       company: Valtech
       user: jakub.igla
       password:
-
-post_actions:
-  - mail:
-      login: jakub.igla@valtech.co.uk
-      password:
-      to: UK.TravelandAccommodation@valtech.co.uk
-      cc: Shanice.David@valtech.co.uk
-      subject: "Travel request ({% for item in modules | moduleName on_site %}#{{ item.output.expense_id }} {% endfor %})"
-      body: |
-        Hey,
-
-        Below is my Travel Request:
-        {% for item in modules | moduleName on_site %}
-        OpenAir Report ID: {{ item.output.expense_id }}
-        Client: {{ item.client }}
-        Travel:
-        {{ item.travel.note }}
-        Accommodation:
-        {{ item.accommodation.note }}
-        {% endfor %}
-        Kind regards,
-        Jakub Igla

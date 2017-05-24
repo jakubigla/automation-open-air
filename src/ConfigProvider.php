@@ -45,6 +45,10 @@ class ConfigProvider
             $cfg = $module[$key];
             $cfg[ModuleInterface::KEY_MODULE_NAME] = $key;
 
+            if (isset($cfg['out']) && isset($cfg['out'])) {
+                $cfg['out'] = date('Y-m-d', strtotime($cfg['out'], strtotime($cfg['in'])));
+            }
+
             \array_walk_recursive($cfg, function (&$item) use ($parser, $cfg) {
                 if (is_string($item)) {
                     $item = $parser->gerParsed($item, $cfg);

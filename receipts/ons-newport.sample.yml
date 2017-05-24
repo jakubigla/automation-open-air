@@ -1,6 +1,6 @@
 modules:
   - on_site:
-      name: "ONS project in Newport [{{ in | dateFormat d.m }} - {{ out | dateFormat d.m }}]"
+      name: "Travel: ONS project in Newport [{{ in | dateFormat d.m }} - {{ out | dateFormat d.m }}]"
       in: "next monday"
       out: "next friday"
       travel:
@@ -8,3 +8,43 @@ modules:
         out_hour: "15:09"
       accommodation:
         name: "Waterloo Hotel"
+  - timesheets:
+      starting_date: #if empty then current week,
+      items:
+        -
+          client: "{{ client }}"
+          task: "{{ task }}"
+          mon: 8
+          tue: 8
+          wed: 8
+          thu: 8
+          fri: 8
+          sat: 0
+          sun: 0
+  - subsistence:
+      name: "Subsistence: ONS project in Newport [{{ in | dateFormat d.m }} - {{ out | dateFormat d.m }}]"
+      in: "last monday"
+      out: "next friday"
+      travel_bonus: yes
+
+post_actions:
+  - mail:
+      login: jakub.igla@valtech.co.uk
+      password:
+      to: UK.TravelandAccommodation@valtech.co.uk
+      cc: Shanice.David@valtech.co.uk
+      subject: "Travel request ({% for item in modules | moduleName on_site %}#{{ item.output.expense_id }} {% endfor %})"
+      body: |
+        Hey,
+
+        Below is my Travel Request:
+        {% for item in modules | moduleName on_site %}
+        OpenAir Report ID: {{ item.output.expense_id }}
+        Client: {{ item.client }}
+        Travel:
+        {{ item.travel.note }}
+        Accommodation:
+        {{ item.accommodation.note }}
+        {% endfor %}
+        Kind regards,
+        Jakub Igla
