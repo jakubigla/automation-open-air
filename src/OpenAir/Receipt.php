@@ -98,9 +98,8 @@ class Receipt
         $page->findField('cost')->setValue($this->cost);
         $page->findField('notes')->setValue($this->notes);
 
-        $session->screenShot('Filled receipt');
-
         $page->findButton('Save')->focus();
+        $session->screenShot('Filled receipt');
         $page->findButton('Save')->click();
         sleep(3);
     }
